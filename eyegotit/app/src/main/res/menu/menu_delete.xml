@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_websearch"
+        android:icon="@drawable/eraser2"
+        android:title="Info"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/choice"
+                android:title="전체 선택" />
+
+            <item
+                android:id="@+id/not_choice"
+                android:title="전체 선택 해제" />
+
+            <item
+                android:id="@+id/delete"
+                android:title="삭제" />
+
+
+        </menu>
+    </item>
+</menu>

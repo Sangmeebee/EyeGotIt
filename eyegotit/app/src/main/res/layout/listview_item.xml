@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<com.sangmee.eyegottttt.checkbox_listview.CheckableLinearLayout android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:descendantFocusability="blocksDescendants"
+    tools:ignore="MissingConstraints"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="10sp"
+            android:id="@+id/textView1"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:layout_weight="6" />
+
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/checkBox1"
+            android:focusable="false"
+            android:clickable="false"
+            android:layout_weight="1" />
+
+</com.sangmee.eyegottttt.checkbox_listview.CheckableLinearLayout>

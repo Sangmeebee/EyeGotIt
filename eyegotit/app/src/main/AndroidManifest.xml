@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sangmee.eyegottttt">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/background"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/background"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".Map.ProtecterMapActivity2"
+            android:label="@string/title_activity_protecter_map2"
+            android:theme="@style/AppTheme.NoActionBar"
+            ></activity>
+        <activity android:name=".TrafficLight.green_light" />
+        <activity
+            android:name=".TrafficLight.CameraActivity"
+            android:label="@string/app_name" />
+        <activity android:name=".Login.InformationActivity" />
+        <activity
+            android:name=".Map.ProtecterMapActivity"
+            android:label="@string/title_activity_protecter_map"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".route_confirmActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Map.MapActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FirstviewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DatabaseActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".checkbox_listview.Delete_DatabaseActivity" />
+        <activity android:name=".Login.SignupActivity" />
+        <activity android:name=".Login.LoginActivity" />
+        <activity
+            android:name=".Map.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="gjwx4qmhcv" />
+
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name=".Map.ForegroundService" />
+        <service android:name=".Map.ForegroundService2" />
+    </application>
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+</manifest>

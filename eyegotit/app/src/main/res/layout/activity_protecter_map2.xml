@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="end">
+
+    <include
+        layout="@layout/app_bar_protecter_map2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="false">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="3">
+            <include layout="@layout/nav_header_protecter_map2"
+                android:id="@+id/my"
+                />
+            <ListView
+
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/list_view_inside_nav"></ListView>
+        </LinearLayout>
+
+    </android.support.design.widget.NavigationView>
+
+
+    <FrameLayout
+        android:id="@+id/fram_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.naver.maps.map.MapView
+            android:id="@+id/main_map_view"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.naver.maps.map.widget.LocationButtonView
+            android:id="@+id/locationbuttonview"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+        </com.naver.maps.map.widget.LocationButtonView>
+
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:background="#00ff0000"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="20dp"
+            app:srcCompat="@drawable/menu" />
+
+
+    </FrameLayout>
+
+
+
+</android.support.v4.widget.DrawerLayout>

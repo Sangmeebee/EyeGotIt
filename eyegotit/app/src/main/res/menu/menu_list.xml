@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<item
+        android:id="@+id/switchs"
+        android:title="위치 변경" />-->
+
+
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/eraser2"
+        android:title="경로 삭제"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:showAsAction="always" />
+
+
+</menu>
