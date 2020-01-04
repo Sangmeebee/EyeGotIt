@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -33,12 +34,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sangmee.eyegottttt.CSSapi.APIExamTTS;
 import com.sangmee.eyegottttt.checkbox_listview.Delete_DatabaseActivity;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
+public class DatabaseActivity extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -49,12 +51,12 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     ArrayAdapter<String> arrayAdapter;
     String user_id;
     ImageButton button;
-    SpeakVoiceActivity voiceActivity;
+    //SpeakVoiceActivity voiceActivity;
     ReplyVoiceActivity replyVoiceActivity;
     TextToSpeech tts;
     final int PERMISSION = 1;
     String arrayListText;
-    String [] strings;
+    String[] strings;
 
 
     ArrayList<String> n_sLongitude;
@@ -62,7 +64,8 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     String s_location;
     Intent intent, intentId;
     String text;
-
+    String[] textString;
+    NaverTTSTask mNaverTTSTask;
 
 
     @Override
@@ -72,38 +75,35 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         setTitle("나의 경로 리스트");
 
 
-        if ( Build.VERSION.SDK_INT >= 23 ){
+        if (Build.VERSION.SDK_INT >= 23) {
             // 퍼미션 체크
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
-                    Manifest.permission.RECORD_AUDIO},PERMISSION);
+                    Manifest.permission.RECORD_AUDIO}, PERMISSION);
         }
 
-        //voiceActivity.text="안녕";
-
-
-        listView=(ListView)findViewById(R.id.database_list);
-        intentId=getIntent();
-        user_id=intentId.getStringExtra("id");
-        button=findViewById(R.id.imageButton4);
+        listView = (ListView) findViewById(R.id.database_list);
+        intentId = getIntent();
+        user_id = intentId.getStringExtra("id");
+        button = findViewById(R.id.imageButton4);
         button.setOnClickListener(voicereplyListener);
-        GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+        GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(button);
         Glide.with(this).load(R.drawable.loader).into(gifImage);
 
-        child_name=new ArrayList<>();
+        child_name = new ArrayList<>();
         initDatabase();
 
-        arrayAdapter=new ArrayAdapter<String>(this,R.layout.listviewtext, new ArrayList<String>()){
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.listviewtext, new ArrayList<String>()) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 // Cast the list view each item as text view
-                TextView item = (TextView) super.getView(position,convertView,parent);
+                TextView item = (TextView) super.getView(position, convertView, parent);
 
                 item.setTextColor(Color.parseColor("#484848"));
 
                 // Change the item text size
-                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP,17);
+                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
 
-                item.setPadding(50,5,5,5);
+                item.setPadding(50, 5, 5, 5);
 
                 // return the view
                 return item;
@@ -121,36 +121,49 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 arrayAdapter.clear();
 
                 for (DataSnapshot messageData : dataSnapshot.getChildren()) {
-                    String name=messageData.getKey();
+                    String name = messageData.getKey();
                     child_name.add(name);
                     arrayAdapter.add(name);
 
-                    strings=new String[child_name.size()];
+                    strings = new String[child_name.size()];
 
-                    arrayListText=" ";
-                    for(int i=0;i<child_name.size();i++){
-                        strings[i]=child_name.get(i);
+                    arrayListText = " ";
+                    for (int i = 0; i < child_name.size(); i++) {
+                        strings[i] = child_name.get(i);
 
-                        arrayListText=arrayListText.concat(i+1+"번, "+strings[i]+"  ,  ");
+                        arrayListText = arrayListText.concat(i + 1 + "번, " + strings[i] + "  ,  ");
                     }
 
                 }
                 arrayAdapter.notifyDataSetChanged();
-                listView.setSelection(arrayAdapter.getCount()-1);
+                listView.setSelection(arrayAdapter.getCount() - 1);
 
-                tts=new TextToSpeech(DatabaseActivity.this,DatabaseActivity.this);
-                voiceActivity=new SpeakVoiceActivity(DatabaseActivity.this,tts);
-                if(arrayListText!=null) {
-                    voiceActivity.text = "나의 경로는 " + arrayListText + arrayAdapter.getCount() + "개의 경로가 있습니다." +
-                            "어떤 경로를 선택하시겠습니까? 번호를 말해주세요.";
-                }
-                else if(arrayListText==null){
-                    voiceActivity.text="경로가 없습니다. 먼저 경로를 등록해주세요.";
+                //tts=new TextToSpeech(DatabaseActivity.this,DatabaseActivity.this);
+                //voiceActivity=new SpeakVoiceActivity(DatabaseActivity.this,tts);
+
+
+                //AsyncTask 실행s
+                mNaverTTSTask = new NaverTTSTask();
+
+
+                if (arrayListText != null) {
+                    String ttsText = "나의 경로는 ";
+                    //ttsText += arrayListText + arrayAdapter.getCount() + "개의 경로가 있습니다." +"어떤 경로를 선택하시겠습니까? 번호를 말해주세요.";
+
+                    textString = new String[]{ttsText};
+                    mNaverTTSTask.execute(textString);
+
+                } else if (arrayListText == null) {
+                    String ttsText = "경로가 없습니다. 먼저 경로를 등록해주세요.";
+
+                    textString = new String[]{ttsText};
+                    mNaverTTSTask.execute(textString);
                 }
 
-                replyVoiceActivity = new ReplyVoiceActivity(DatabaseActivity.this, tts, "하나",null,null,arrayAdapter,listView);
+                replyVoiceActivity = new ReplyVoiceActivity(DatabaseActivity.this, tts, "하나", null, null, arrayAdapter, listView);
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -159,60 +172,57 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
 
 
     }
+
+    //네이버 API 연동 관련 클래스
+    private class NaverTTSTask extends AsyncTask<String[], Void, String> {
+        @Override
+        protected String doInBackground(String[]... strings) {
+            //여기서 서버에 요청
+            //tts=new APIExamTTS();
+            APIExamTTS.main(textString);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Log.i("hyori", "stop");
+            APIExamTTS.stop();
+        }
+    }
+
     @Override
     protected void onStop() {
-        tts.stop();
-        GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+        //tts.stop();
+        APIExamTTS.stop();
+        GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(button);
         Glide.with(DatabaseActivity.this).load(R.drawable.loader).into(gifImage);
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        //TTS 멈추기
-        if(tts!=null){
-            tts.stop();
-            tts.shutdown();
-
-        }
+        APIExamTTS.stop();
         databaseReference.removeEventListener(mChild);
         super.onDestroy();
     }
 
 
-    @Override
-    public void onInit(int status) {//TTS 보내기 위한 함수
-        if(status==TextToSpeech.SUCCESS){
-            int result=tts.setLanguage(Locale.KOREA);
-            if(result==TextToSpeech.LANG_MISSING_DATA){
-                Log.d("hyori","no tts data");
-            }
-            else if(result==TextToSpeech.LANG_NOT_SUPPORTED){
-                Log.d("hyori","language wrong");
-            }
-            else{
-                //mRecognizer.stopListening();
-                voiceActivity.speekTTS(voiceActivity.text,tts);
-            }
-        }
-        else{
-            Log.d("hyori","failed");
-        }
-
-    }
-
-    View.OnClickListener voicereplyListener=new View.OnClickListener() {
+    View.OnClickListener voicereplyListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(tts!=null) {
-                tts.stop();
-            }
+            APIExamTTS.stop();
 
-            GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+            GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(button);
             Glide.with(DatabaseActivity.this).load(R.drawable.loader2).into(gifImage);
 
             replyVoiceActivity.receiver();
-
 
 
         }
@@ -248,31 +258,30 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     }
 
 
-
-
-    AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener() {
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            s_location=adapterView.getAdapter().getItem(i).toString();
+            s_location = adapterView.getAdapter().getItem(i).toString();
             Log.d("sangmin", s_location);
-            intent=new Intent(DatabaseActivity.this, route_confirmActivity.class);
+            intent = new Intent(DatabaseActivity.this, route_confirmActivity.class);
             intent.putExtra("s_location", s_location);
             intent.putExtra("id", user_id);
             startActivity(intent);
             tts.stop();
         }
     };
+
     @Override
     protected void onRestart() {
 
-        voiceActivity.speekTTS(voiceActivity.text,tts);
+        //voiceActivity.speekTTS(voiceActivity.text,tts);
         super.onRestart();
     }
 
     //메뉴
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list,menu);
+        getMenuInflater().inflate(R.menu.menu_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -283,13 +292,11 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
 
                 break;*/
             case R.id.delete:
-                intent=new Intent(DatabaseActivity.this, Delete_DatabaseActivity.class);
+                intent = new Intent(DatabaseActivity.this, Delete_DatabaseActivity.class);
                 intent.putExtra("id", user_id);
                 startActivity(intent);
 
                 return true;
-
-
 
 
         }
