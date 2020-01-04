@@ -121,7 +121,7 @@ public class FirstviewActivity extends AppCompatActivity {
 
         textString = new String[]{ttsText};
 
-        //AsyncTask 실행
+        //AsyncTask 실행s
         mNaverTTSTask = new NaverTTSTask();
         mNaverTTSTask.execute(textString);
 
