@@ -2,6 +2,7 @@ package com.sangmee.eyegottttt;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -15,12 +16,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sangmee.eyegottttt.CSSapi.APIExamTTS;
 import com.sangmee.eyegottttt.Map.MapActivity;
 
 import java.util.Calendar;
 import java.util.Locale;
 
-public class route_confirmActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
+public class route_confirmActivity extends AppCompatActivity{
     final int PERMISSION = 1;
     Intent intent;
     String s_location;
@@ -32,11 +34,14 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
     boolean checking=true;
 
     TextToSpeech tts;
-    SpeakVoiceActivity voiceActivity;
+    //SpeakVoiceActivity voiceActivity;
     ReplyVoiceActivity replyVoiceActivity;
 
     final Calendar alarmCalendar = Calendar.getInstance();
     long alarmTime;
+
+    String[] textString;
+    NaverTTSTask mNaverTTSTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,10 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
 
         // style 다른거 쓸라면 이렇게 해야됨.
         setTheme(R.style.noactionbar);
+
+        //ttstask
+        mNaverTTSTask=new NaverTTSTask();
+
         // 핸들러
         Handler delayHandler = new Handler();
         Handler delayHandler2=new Handler();
@@ -70,8 +79,8 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
         textview1.setText(s_location + " 경로를 안내 받으시겠습니까?\n\n");
         textview2.setText("1. 예\n2. 아니오\n\n (1번 : 오른쪽 드래그)\n(2번 : 왼쪽 드래그)");
 
-        tts = new TextToSpeech(route_confirmActivity.this, route_confirmActivity.this);
-        voiceActivity = new SpeakVoiceActivity(route_confirmActivity.this, tts);
+        //tts = new TextToSpeech(route_confirmActivity.this, route_confirmActivity.this);
+        //voiceActivity = new SpeakVoiceActivity(route_confirmActivity.this, tts);
 
         // 딜레이 거는 방법 밑에 있는 숫자로 조정 가능
         delayHandler.postDelayed(new Runnable() {
@@ -81,8 +90,10 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
                 if(checking==true) {
                     textview1.animate().alpha(1f).setDuration(2000);
 
-                    voiceActivity.text = s_location + "경로를 안내 받으시겠습니까?";
-                    voiceActivity.speekTTS(voiceActivity.text, tts);
+                    String ttsText = s_location + "경로를 안내 받으시겠습니까?";
+
+                    textString = new String[]{ttsText};
+                    mNaverTTSTask.execute(textString);
                 }
 
             }
@@ -94,8 +105,11 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
                 // 이 부분이 alpha0으로 둔것을 천천히 나타나게 하는 부분
                 textview2.animate().alpha(1f).setDuration(2000);
                 if(checking==true) {
-                    voiceActivity.text = "일번 네 ";
-                    voiceActivity.speekTTS(voiceActivity.text, tts);
+
+                    String ttsText = "일번 네 ";
+
+                    textString = new String[]{ttsText};
+                    mNaverTTSTask.execute(textString);
                 }
 
             }
@@ -106,8 +120,10 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
             public void run() {
                 // 이 부분이 alpha0으로 둔것을 천천히 나타나게 하는 부분
                 if(checking==true) {
-                    voiceActivity.text = " 이번 아니오  일번 선택 시 오른쪽 드래그... 이번 선택 시 왼쪽 드래그..를 하세요";
-                    voiceActivity.speekTTS(voiceActivity.text, tts);
+                    /*String ttsText = " 이번 아니오  일번 선택 시 오른쪽 드래그... 이번 선택 시 왼쪽 드래그..를 하세요";
+
+                    textString = new String[]{ttsText};
+                    mNaverTTSTask.execute(textString);*/
                 }
 
             }
@@ -139,7 +155,7 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
                         if (diffxx > MOVE_HAND) {
                             onBackPressed();
                             checking=false;
-                            tts.stop();
+                            mNaverTTSTask.onCancelled();
 
                         } else if (diffxx < -MOVE_HAND) {
                             Intent intent = new Intent(route_confirmActivity.this, MapActivity.class);
@@ -149,7 +165,7 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
                             finish();
 
                             checking=false;
-                            tts.stop();
+                            mNaverTTSTask.onCancelled();
                         }
                     } else {
                         if (diffyy > MOVE_HAND) {
@@ -167,41 +183,42 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
 
     }
 
+    //네이버 API 연동 관련 클래스
+    private class NaverTTSTask extends AsyncTask<String[], Void, String> {
+        @Override
+        protected String doInBackground(String[]... strings) {
+            //여기서 서버에 요청
+            //tts=new APIExamTTS();
+            APIExamTTS.main(textString);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Log.i("hyori", "stop");
+            APIExamTTS.stop();
+        }
+    }
+
+
     @Override
     protected void onStop() {
-        tts.stop();
+        APIExamTTS.stop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        //TTS 멈추기
-        if(tts!=null){
-            tts.stop();
-            tts.shutdown();
-        }
+        APIExamTTS.stop();
         super.onDestroy();
     }
 
-    @Override
-    public void onInit(int status) {//TTS 보내기 위한 함수
-        if(status==TextToSpeech.SUCCESS){
-            int result=tts.setLanguage(Locale.KOREA);
-            if(result==TextToSpeech.LANG_MISSING_DATA){
-                Log.d("hyori","no tts data");
-            }
-            else if(result==TextToSpeech.LANG_NOT_SUPPORTED){
-                Log.d("hyori","language wrong");
-            }
-            else{
-                //mRecognizer.stopListening();
-                voiceActivity.speekTTS(voiceActivity.text,tts);
-            }
-        }
-        else{
-            Log.d("hyori","failed");
-        }
-
-    }
 
 }
