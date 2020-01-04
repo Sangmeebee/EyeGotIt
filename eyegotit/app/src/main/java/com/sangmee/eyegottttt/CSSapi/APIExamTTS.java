@@ -19,6 +19,7 @@ import java.util.Date;
 public class APIExamTTS {
 
     private static String TAG = "APIExamTTS";
+    private static MediaPlayer audioPlay;
 
     public static void main(String[] args) {
         String clientId = "ssbj4qersa";//애플리케이션 클라이언트 아이디값";
@@ -32,7 +33,7 @@ public class APIExamTTS {
             con.setRequestProperty("X-NCP-APIGW-API-KEY-ID", clientId);
             con.setRequestProperty("X-NCP-APIGW-API-KEY", clientSecret);
             // post request
-            String postParams = "speaker=mijin&speed=0&text=" + text;
+            String postParams = "speaker=jinho&speed=0&text=" + text;
             System.out.println(postParams);
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -66,7 +67,7 @@ public class APIExamTTS {
 
 
                 String pathToFile = Environment.getExternalStorageDirectory() + File.separator + "NCP/" + tempname + ".mp3";
-                MediaPlayer audioPlay = new MediaPlayer();
+                audioPlay = new MediaPlayer();
                 audioPlay.setDataSource(pathToFile);
                 audioPlay.prepare();
                 audioPlay.start();
@@ -85,6 +86,9 @@ public class APIExamTTS {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+    public static void stop(){
+        audioPlay.stop();
     }
 
 
