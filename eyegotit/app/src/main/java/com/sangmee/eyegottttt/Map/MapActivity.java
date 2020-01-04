@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -109,7 +110,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ProtecterMapActivity2 protecterMapActivity2;
 
     //mqtt 변수
-    private Button alert_btn;
+    private ImageButton alert_btn;
     String topicStr = "사용자의 현재위치입니다.";
     String topicStr2="길을 잃었어요!!!";
     String topic_value;
@@ -208,7 +209,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(MapActivity.this, "tcp://broker.hivemq.com:1883", clientId);
 
-        alert_btn = (Button) findViewById(R.id.alert_btn);
+        alert_btn = (ImageButton) findViewById(R.id.alert_btn);
         //connect하는 부분
         try {
             IMqttToken token = client.connect(getMqttConnectionOption());
