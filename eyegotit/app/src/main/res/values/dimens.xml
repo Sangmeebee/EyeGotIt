@@ -1,0 +1,16 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="design_navigation_icon_size">48dp</dimen>
+
+    <item type="dimen" name="dialog_min_width_major">90%</item>
+    <item type="dimen" name="dialog_min_width_minor">90%</item>
+
+    <dimen name="alertdialog_button_width">150dp</dimen>
+    <dimen name="alertdialog_button_height">150dp</dimen>
+
+</resources>
