@@ -49,11 +49,6 @@ public class LoginActivity extends AppCompatActivity {
     int okay;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-    //APITTS 연동
-    private APIExamTTS t;
-    private NaverTTSTask mNaverTTSTask;
-    String[] textString;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,23 +176,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-
-    //네이버 API 연동 관련 클래스
-    private class NaverTTSTask extends AsyncTask<String[], Void, String> {
-        @Override
-        protected String doInBackground(String[]... strings) {
-            //여기서 서버에 요청
-            APIExamTTS.main(textString);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-        }
     }
 
 

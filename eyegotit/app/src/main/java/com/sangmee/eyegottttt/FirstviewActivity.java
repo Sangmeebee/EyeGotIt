@@ -203,6 +203,7 @@ public class FirstviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        APIExamTTS.stop();
     }
 
 
@@ -228,6 +229,7 @@ public class FirstviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        APIExamTTS.stop();
     }
 
     @Override
