@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -28,8 +29,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.sangmee.eyegottttt.FirstviewActivity;
 import com.sangmee.eyegottttt.Map.ProtecterMapActivity;
 import com.sangmee.eyegottttt.R;
+import com.sangmee.eyegottttt.CSSapi.APIExamTTS;
 
 import java.util.ArrayList;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,11 +49,29 @@ public class LoginActivity extends AppCompatActivity {
     int okay;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
+    //APITTS 연동
+    private NaverTTSTask mNaverTTSTask;
+    String[] textString;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(R.style.noactionbar);
         setContentView(R.layout.activity_login);
+
+        String mText;
+        String ttsText="저기";
+        if(ttsText.length()>0){
+            mText=ttsText;
+            textString=new String[]{mText};
+
+            //AsyncTask 실행
+            mNaverTTSTask = new NaverTTSTask();
+            mNaverTTSTask.execute(textString);
+
+        }
 
         //setTitle("로그인");
         edtLoginID=(EditText) findViewById(R.id.edtLoginID);
@@ -163,6 +184,21 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private class NaverTTSTask extends AsyncTask<String[], Void, String> {
+        @Override
+        protected String doInBackground(String[]... strings) {
+            //여기서 서버에 요청
+            APIExamTTS.main(textString);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+        }
     }
 
 
