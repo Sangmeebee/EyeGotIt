@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sangmee.eyegottttt.CSSapi.APIExamTTS;
 import com.sangmee.eyegottttt.Login.LoginActivity;
 import com.sangmee.eyegottttt.Map.ProtecterMapActivity;
 
@@ -29,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
     String us_id;
     String us_pw;
     int okay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
