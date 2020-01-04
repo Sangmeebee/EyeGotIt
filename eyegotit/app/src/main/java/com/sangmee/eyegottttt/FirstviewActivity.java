@@ -115,7 +115,8 @@ public class FirstviewActivity extends AppCompatActivity {
         }, 6000);
 
 
-        String ttsText = "안녕하세요 eye got it 입니다. 어떤 기능을 사용할건가요? ";
+        String ttsText="안녕하세요";
+        //String ttsText = "안녕하세요 eye got it 입니다. 어떤 기능을 사용할건가요? ";
         //ttsText+="1번 등록해둔 경로, 2번 새로운 경로, 1번 선택 시 오른쪽 드래그, 2번 선택 시 왼쪽 드래그를 하세요";
 
         textString = new String[]{ttsText};
