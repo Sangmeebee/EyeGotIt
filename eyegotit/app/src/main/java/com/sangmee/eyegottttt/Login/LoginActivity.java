@@ -62,15 +62,13 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        String mText;
-        String ttsText = "로그인 화면입니다";
+        /*String ttsText = "로그인 화면입니다";
 
-        mText = ttsText;
-        textString = new String[]{mText};
+        textString = new String[]{ttsText};
 
         //AsyncTask 실행
         mNaverTTSTask = new NaverTTSTask();
-        mNaverTTSTask.execute(textString);
+        mNaverTTSTask.execute(textString);*/
 
 
         //setTitle("로그인");
