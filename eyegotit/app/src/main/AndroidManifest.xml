@@ -28,9 +28,6 @@
         <activity
             android:name=".Map.MapActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".CSRapi.CsrActivity">
-        </activity>
 
         <activity android:name=".SplashActivity">
             <intent-filter>

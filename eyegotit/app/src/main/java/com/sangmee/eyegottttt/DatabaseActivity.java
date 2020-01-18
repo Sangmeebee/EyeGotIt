@@ -1,10 +1,8 @@
 package com.sangmee.eyegottttt;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -38,7 +35,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sangmee.eyegottttt.CSRapi.AudioWriterPCM;
-import com.sangmee.eyegottttt.CSRapi.CsrActivity;
 import com.sangmee.eyegottttt.CSRapi.CsrProc;
 import com.sangmee.eyegottttt.checkbox_listview.Delete_DatabaseActivity;
 
