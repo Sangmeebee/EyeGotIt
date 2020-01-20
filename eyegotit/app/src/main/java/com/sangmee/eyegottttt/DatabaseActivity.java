@@ -45,7 +45,7 @@ import java.util.Locale;
 
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 
-public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
+public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -61,7 +61,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     TextToSpeech tts;
     final int PERMISSION = 1;
     String arrayListText;
-    String [] strings;
+    String[] strings;
 
 
     ArrayList<String> n_sLongitude;
@@ -82,7 +82,6 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     ////////////////
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,44 +89,44 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         setTitle("나의 경로 리스트");
 
 
-        if ( Build.VERSION.SDK_INT >= 23 ){
+        if (Build.VERSION.SDK_INT >= 23) {
             // 퍼미션 체크
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
-                    Manifest.permission.RECORD_AUDIO},PERMISSION);
+                    Manifest.permission.RECORD_AUDIO}, PERMISSION);
         }
 
         //voiceActivity.text="안녕";
 
 
-        listView=(ListView)findViewById(R.id.database_list);
-        intentId=getIntent();
-        user_id=intentId.getStringExtra("id");
+        listView = (ListView) findViewById(R.id.database_list);
+        intentId = getIntent();
+        user_id = intentId.getStringExtra("id");
         txtResult = findViewById(R.id.textViewwww);
-        button=findViewById(R.id.imageButton4);
+        button = findViewById(R.id.imageButton4);
         button.setOnClickListener(voicereplyListener);
 
-        gifImage=new GlideDrawableImageViewTarget(button);
+        gifImage = new GlideDrawableImageViewTarget(button);
         Glide.with(this).load(R.drawable.loader).into(gifImage);
 
         handler = new RecognitionHandler(this);
         naverRecognizer = CsrProc.getCsrProc(this, "ssbj4qersa");
         naverRecognizer.setHandler(handler);
 
-        child_name=new ArrayList<>();
+        child_name = new ArrayList<>();
         initDatabase();
 
-        arrayAdapter=new ArrayAdapter<String>(this,R.layout.listviewtext, new ArrayList<String>()){
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.listviewtext, new ArrayList<String>()) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 // Cast the list view each item as text view
-                TextView item = (TextView) super.getView(position,convertView,parent);
+                TextView item = (TextView) super.getView(position, convertView, parent);
 
                 item.setTextColor(Color.parseColor("#484848"));
 
                 // Change the item text size
-                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP,17);
+                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
 
-                item.setPadding(50,5,5,5);
+                item.setPadding(50, 5, 5, 5);
 
                 // return the view
                 return item;
@@ -145,36 +144,36 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 arrayAdapter.clear();
 
                 for (DataSnapshot messageData : dataSnapshot.getChildren()) {
-                    String name=messageData.getKey();
+                    String name = messageData.getKey();
                     child_name.add(name);
                     arrayAdapter.add(name);
 
-                    strings=new String[child_name.size()];
+                    strings = new String[child_name.size()];
 
-                    arrayListText=" ";
-                    for(int i=0;i<child_name.size();i++){
-                        strings[i]=child_name.get(i);
+                    arrayListText = " ";
+                    for (int i = 0; i < child_name.size(); i++) {
+                        strings[i] = child_name.get(i);
 
-                        arrayListText=arrayListText.concat(i+1+"번, "+strings[i]+"  ,  ");
+                        arrayListText = arrayListText.concat(i + 1 + "번, " + strings[i] + "  ,  ");
                     }
 
                 }
                 arrayAdapter.notifyDataSetChanged();
-                listView.setSelection(arrayAdapter.getCount()-1);
+                listView.setSelection(arrayAdapter.getCount() - 1);
 
-                tts=new TextToSpeech(DatabaseActivity.this,DatabaseActivity.this);
-                voiceActivity=new SpeakVoiceActivity(DatabaseActivity.this,tts);
-                if(arrayListText!=null) {
+                tts = new TextToSpeech(DatabaseActivity.this, DatabaseActivity.this);
+                voiceActivity = new SpeakVoiceActivity(DatabaseActivity.this, tts);
+                if (arrayListText != null) {
                     voiceActivity.text = "나의 경로는 " + arrayListText + arrayAdapter.getCount() + "개의 경로가 있습니다." +
                             "어떤 경로를 선택하시겠습니까? 번호를 말해주세요.";
-                }
-                else if(arrayListText==null){
-                    voiceActivity.text="경로가 없습니다. 먼저 경로를 등록해주세요.";
+                } else if (arrayListText == null) {
+                    voiceActivity.text = "경로가 없습니다. 먼저 경로를 등록해주세요.";
                 }
 
                 //replyVoiceActivity = new ReplyVoiceActivity(DatabaseActivity.this, tts, "하나",null,null,arrayAdapter,listView);
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -203,7 +202,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     @Override
     protected void onStop() {
         tts.stop();
-        GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+        GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(button);
         Glide.with(DatabaseActivity.this).load(R.drawable.loader).into(gifImage);
         super.onStop();
     }
@@ -211,7 +210,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     @Override
     protected void onDestroy() {
         //TTS 멈추기
-        if(tts!=null){
+        if (tts != null) {
             tts.stop();
             tts.shutdown();
 
@@ -223,21 +222,18 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
 
     @Override
     public void onInit(int status) {//TTS 보내기 위한 함수
-        if(status==TextToSpeech.SUCCESS){
-            int result=tts.setLanguage(Locale.KOREA);
-            if(result==TextToSpeech.LANG_MISSING_DATA){
-                Log.d("hyori","no tts data");
-            }
-            else if(result==TextToSpeech.LANG_NOT_SUPPORTED){
-                Log.d("hyori","language wrong");
-            }
-            else{
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.KOREA);
+            if (result == TextToSpeech.LANG_MISSING_DATA) {
+                Log.d("hyori", "no tts data");
+            } else if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.d("hyori", "language wrong");
+            } else {
                 //mRecognizer.stopListening();
-                voiceActivity.speekTTS(voiceActivity.text,tts);
+                voiceActivity.speekTTS(voiceActivity.text, tts);
             }
-        }
-        else{
-            Log.d("hyori","failed");
+        } else {
+            Log.d("hyori", "failed");
         }
 
     }
@@ -245,14 +241,14 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     /////////////////////////////////////////////////////////////
     // 음성 인식 버튼 //
 
-    View.OnClickListener voicereplyListener=new View.OnClickListener() {
+    View.OnClickListener voicereplyListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(tts!=null) {
+            if (tts != null) {
                 tts.stop();
             }
 
-            GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+            GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(button);
             Glide.with(DatabaseActivity.this).load(R.drawable.loader2).into(gifImage);
 
             //replyVoiceActivity.receiver();
@@ -268,7 +264,6 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 //btnStart.setEnabled(false);
                 naverRecognizer.getSpeechRecognizer().stop();
             }
-
 
 
         }
@@ -296,7 +291,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
                 List<String> results = speechRecognitionResult.getResults();
                 StringBuilder strBuf = new StringBuilder();
-                for(String result : results) {
+                for (String result : results) {
                     strBuf.append(result);
                     //strBuf.append("\n");
                     break;
@@ -329,12 +324,29 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         }
     }
 
-    private void datapathreplyAnswer(String input){
+    private void datapathreplyAnswer(String input) {
         String[] array = input.split("번");
-        for(int i=1;i<=arrayAdapter.getCount();i++){
-            if(i==Integer.parseInt(array[0])){
-                listView.performItemClick(listView,i-1,1);
+
+        //번 앞의 문자열이 한글자가 아닐때
+        if (array[0].length() != 1) {
+            text = "다시 말씀해주세요.";
+            voiceActivity.speekTTS(text, tts);
+        }
+
+        //번 앞의 문자열이 한글자일때
+        else if (array[0].length() == 1) {
+
+            if (Integer.parseInt(array[0]) > arrayAdapter.getCount()) {
+                text = Integer.toString(Integer.parseInt(array[0])) + "번은 없는 번호입니다. 있는 번호를 말해주세요.";
+                voiceActivity.speekTTS(text, tts);
+            } else if (Integer.parseInt(array[0]) <= arrayAdapter.getCount()) {
+                for (int i = 1; i <= arrayAdapter.getCount(); i++) {
+                    if (i == Integer.parseInt(array[0])) {
+                        listView.performItemClick(listView, i - 1, 1);
+                    }
+                }
             }
+
         }
     }
 
@@ -367,31 +379,30 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     }
 
 
-
-
-    AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener() {
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            s_location=adapterView.getAdapter().getItem(i).toString();
+            s_location = adapterView.getAdapter().getItem(i).toString();
             Log.d("sangmin", s_location);
-            intent=new Intent(DatabaseActivity.this, route_confirmActivity.class);
+            intent = new Intent(DatabaseActivity.this, route_confirmActivity.class);
             intent.putExtra("s_location", s_location);
             intent.putExtra("id", user_id);
             startActivity(intent);
             tts.stop();
         }
     };
+
     @Override
     protected void onRestart() {
 
-        voiceActivity.speekTTS(voiceActivity.text,tts);
+        voiceActivity.speekTTS(voiceActivity.text, tts);
         super.onRestart();
     }
 
     //메뉴
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list,menu);
+        getMenuInflater().inflate(R.menu.menu_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -401,13 +412,11 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
             /*case R.id.switchs:
                 break;*/
             case R.id.delete:
-                intent=new Intent(DatabaseActivity.this, Delete_DatabaseActivity.class);
+                intent = new Intent(DatabaseActivity.this, Delete_DatabaseActivity.class);
                 intent.putExtra("id", user_id);
                 startActivity(intent);
 
                 return true;
-
-
 
 
         }
@@ -416,9 +425,11 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
 
     static class RecognitionHandler extends Handler {
         private final WeakReference<DatabaseActivity> mActivity;
+
         RecognitionHandler(DatabaseActivity activity) {
             mActivity = new WeakReference<DatabaseActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             DatabaseActivity activity = mActivity.get();
