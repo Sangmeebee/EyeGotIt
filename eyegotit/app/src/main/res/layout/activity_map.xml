@@ -25,16 +25,14 @@
             android:layout_marginRight="20dp"></com.naver.maps.map.widget.LocationButtonView>
 
 
-
-
         <ImageButton
             android:id="@+id/alert_btn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="258dp"
+            android:layout_height="281dp"
+            android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:background="#00000000"
             android:scaleType="center"
-            android:layout_gravity="center"
             app:srcCompat="@drawable/arrow" />
 
 
