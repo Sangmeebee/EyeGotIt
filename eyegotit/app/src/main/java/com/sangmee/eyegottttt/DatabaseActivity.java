@@ -78,6 +78,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
     private Button btnStart;
     private String mResult;
     private AudioWriterPCM writer;
+    private GlideDrawableImageViewTarget gifImage;
     ////////////////
 
 
@@ -104,7 +105,8 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         txtResult = findViewById(R.id.textViewwww);
         button=findViewById(R.id.imageButton4);
         button.setOnClickListener(voicereplyListener);
-        GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+
+        gifImage=new GlideDrawableImageViewTarget(button);
         Glide.with(this).load(R.drawable.loader).into(gifImage);
 
         handler = new RecognitionHandler(this);
@@ -300,10 +302,13 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                     break;
                 }
                 mResult = strBuf.toString();
-                txtResult.setText(mResult);
 
-                GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
+                txtResult.setText(mResult);
+                datapathreplyAnswer(mResult);
+
+                //GlideDrawableImageViewTarget gifImage=new GlideDrawableImageViewTarget(button);
                 Glide.with(this).load(R.drawable.loader).into(gifImage);
+
                 break;
             case 5:
                 if (writer != null) {
@@ -321,6 +326,15 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 //btnStart.setText("시작");
                 //btnStart.setEnabled(true);
                 break;
+        }
+    }
+
+    private void datapathreplyAnswer(String input){
+        String[] array = input.split("번");
+        for(int i=1;i<=arrayAdapter.getCount();i++){
+            if(i==Integer.parseInt(array[0])){
+                listView.performItemClick(listView,i-1,1);
+            }
         }
     }
 
