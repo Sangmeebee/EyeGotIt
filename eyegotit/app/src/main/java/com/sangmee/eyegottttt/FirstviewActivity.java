@@ -33,7 +33,7 @@ public class FirstviewActivity extends AppCompatActivity implements TextToSpeech
     final int PERMISSION = 1;
     TextToSpeech tts;
     SpeakVoiceActivity voiceActivity;
-    ReplyVoiceActivity replyVoiceActivity;
+    //ReplyVoiceActivity replyVoiceActivity;
     Intent intentId;
     TextView textview1, textview2, textview3, textview4, textview_logout, textview_logout_btn;
     RelativeLayout relativeLayout;
@@ -202,12 +202,12 @@ public class FirstviewActivity extends AppCompatActivity implements TextToSpeech
 
     }
 
-    View.OnClickListener voicereplyListener=new View.OnClickListener() {
+    /*View.OnClickListener voicereplyListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             replyVoiceActivity.receiver();
         }
-    };
+    };*/
 
     View.OnClickListener fordisablemanListener=new View.OnClickListener() {
         @Override

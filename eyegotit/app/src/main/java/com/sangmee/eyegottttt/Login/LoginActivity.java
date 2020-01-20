@@ -29,7 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.sangmee.eyegottttt.FirstviewActivity;
 import com.sangmee.eyegottttt.Map.ProtecterMapActivity;
 import com.sangmee.eyegottttt.R;
-import com.sangmee.eyegottttt.CSSapi.APIExamTTS;
 
 import java.util.ArrayList;
 

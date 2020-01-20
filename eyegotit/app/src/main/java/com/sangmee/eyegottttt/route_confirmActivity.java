@@ -33,7 +33,7 @@ public class route_confirmActivity extends AppCompatActivity implements TextToSp
 
     TextToSpeech tts;
     SpeakVoiceActivity voiceActivity;
-    ReplyVoiceActivity replyVoiceActivity;
+    //ReplyVoiceActivity replyVoiceActivity;
 
     final Calendar alarmCalendar = Calendar.getInstance();
     long alarmTime;
