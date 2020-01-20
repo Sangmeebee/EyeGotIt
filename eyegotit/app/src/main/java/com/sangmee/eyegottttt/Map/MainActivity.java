@@ -60,7 +60,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
-
+    //chanmi test
     private Button start_btn;
     private Button point_btn;
     private Button end_btn;
