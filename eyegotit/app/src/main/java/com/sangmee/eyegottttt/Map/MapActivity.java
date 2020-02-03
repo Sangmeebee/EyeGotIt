@@ -11,6 +11,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -81,7 +85,7 @@ import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 import com.kakao.util.helper.log.Logger;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, TextToSpeech.OnInitListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, TextToSpeech.OnInitListener, SensorEventListener {
 
     public static final String CHANNEL_ID = "notificationChannel";
     private DatabaseReference databaseReference;
@@ -144,6 +148,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     String longi;
     Marker marker = new Marker();
 
+    //Shake 감지
+    private long lastTime;
+    private float speed;
+    private float lastX;
+    private float lastY;
+    private float lastZ;
+    private float x, y, z;
+
+    private static final int SHAKE_THRESHOLD = 800;
+    private static final int DATA_X = SensorManager.DATA_X;
+    private static final int DATA_Y = SensorManager.DATA_Y;
+    private static final int DATA_Z = SensorManager.DATA_Z;
+
+    private SensorManager sensorManager;
+    private Sensor accelerormeterSensor;
+
+    boolean checking_shake = false;
+
     SharedPreferences.OnSharedPreferenceChangeListener mPrefChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -170,6 +192,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setTheme(R.style.noactionbar);
         setContentView(R.layout.activity_map);
+
+        //Shake 감지
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerormeterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         intent = getIntent();
         intentId = getIntent();
@@ -273,7 +299,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     float diffyy = sy[0] - e.getRawY();
                     if (Math.abs(diffxx) > Math.abs(diffyy)) {
                         if (diffxx > MOVE_HAND) {// 왼쪽 드래그
-                            String address=getAddress(MapActivity.this,latitude,longitude);
+                            String address = getAddress(MapActivity.this, latitude, longitude);
                             //카카오톡 연동
                             shareKaKaoLinkWithMap(address);
 
@@ -429,7 +455,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public String getAddress(Context mContext, double lat, double lng) {
-        String nowAddress ="현재 위치를 확인 할 수 없습니다.";
+        String nowAddress = "현재 위치를 확인 할 수 없습니다.";
         Geocoder geocoder = new Geocoder(mContext, Locale.KOREA);
         List<Address> address;
         try {
@@ -441,7 +467,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (address != null && address.size() > 0) {
                     // 주소 받아오기
                     String currentLocationAddress = address.get(0).getAddressLine(0).toString();
-                    nowAddress  = currentLocationAddress;
+                    nowAddress = currentLocationAddress;
                 }
             }
         } catch (IOException e) {
@@ -451,7 +477,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return nowAddress;
     }
-
 
 
     private MqttConnectOptions getMqttConnectionOption() {
@@ -726,6 +751,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onStart() {
         super.onStart();
         mapView.onStart();
+        if (accelerormeterSensor != null)
+            sensorManager.registerListener(this, accelerormeterSensor,
+                    SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
@@ -751,6 +779,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onStop() {
         super.onStop();
         mapView.onStop();
+        if (sensorManager != null)
+            sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -802,4 +832,77 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    //Shake 감지
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            long currentTime = System.currentTimeMillis();
+            long gabOfTime = (currentTime - lastTime);
+            if (gabOfTime > 100) {
+                lastTime = currentTime;
+                x = event.values[SensorManager.DATA_X];
+                y = event.values[SensorManager.DATA_Y];
+                z = event.values[SensorManager.DATA_Z];
+
+                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
+
+                if (speed > SHAKE_THRESHOLD) {// 이벤트발생!!
+                    topicStr2 = topicStr2 + "####" + latitude + "####" + longitude + "####사용자####";
+                    Log.v("SEYUN_TAG", topicStr2);
+                    String msg = new String(topicStr2);
+                    String word1 = msg.split("####")[0];
+                    String lati = msg.split("####")[1];
+                    String longi = msg.split("####")[2];
+                    String user = msg.split("####")[3];
+                    Log.v("SEYUN_TAG", lati);
+                    Log.v("SEYUN_TAG", longi);
+
+                    int qos = 0;
+                    try {
+                        IMqttToken subToken = client.publish(topic_value, topicStr2.getBytes(), qos, false);
+                        subToken.setActionCallback(new IMqttActionListener() {
+                            @Override
+                            public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
+                                Log.v("SEYUN_TAG", "connection2");
+                                String text = "사용자의 핸드폰이 심각히 흔들렸습니다.";
+                                Toast.makeText(MapActivity.this, text, Toast.LENGTH_SHORT).show();
+
+                                //여기서 토스트문을 음성으로 말해줘야함.
+                                voiceActivity.text = text;
+                                voiceActivity.speekTTS(voiceActivity.text, tts);
+
+                                topicStr2 = "길을 잃었어요!!!";
+
+                                SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = tmsg.edit();
+                                editor.putString("latitude", lati);
+                                editor.putString("longitude", longi);
+                                editor.apply();
+                                //editor.commit();
+                                Log.v("SEYUN_TAG", "데이터저장2");
+                            }
+
+                            @Override
+                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) { //연결에 실패한 경우
+                                Toast.makeText(MapActivity.this, "연결에 실패하였습니다...(2)", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (MqttException fe) {
+                        fe.printStackTrace();
+                    }
+                }
+
+                lastX = event.values[DATA_X];
+                lastY = event.values[DATA_Y];
+                lastZ = event.values[DATA_Z];
+            }
+
+        }
+
+    }
 }
