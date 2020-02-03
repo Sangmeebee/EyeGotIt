@@ -27,4 +27,9 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+
+    <!--카카오 ♬-->
+    <string name="kakao_app_key"> f828ef5766c6d3821cae687d8c4491da</string>
+    <string name="kakao_scheme">kakao f828ef5766c6d3821cae687d8c4491da</string>
+    <string name="kakaolink_host">kakaolink</string>
 </resources>

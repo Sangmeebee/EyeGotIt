@@ -42,7 +42,7 @@ public class SplashActivity extends AppCompatActivity {
         // style 다른거 쓸라면 이렇게 해야됨.
         setTheme(R.style.nomenubar);
         setContentView(R.layout.activity_splash);
-
+        getHashKey();
         //자동로그인/////////////////////////////
         SharedPreferences sf = getSharedPreferences("sFile",MODE_PRIVATE);
         //us_id/us_pw라는 key에 저장된 값이 있는지 확인. 아무값도 들어있지 않으면 ""를 반환

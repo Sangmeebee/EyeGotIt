@@ -9,10 +9,10 @@
         android:roundIcon="@mipmap/background"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Map.ProtecterMapActivity2"
+        <activity
+            android:name=".Map.ProtecterMapActivity2"
             android:label="@string/title_activity_protecter_map2"
-            android:theme="@style/AppTheme.NoActionBar"
-            ></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".TrafficLight.green_light" />
         <activity
             android:name=".TrafficLight.CameraActivity"
@@ -27,7 +27,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Map.MapActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <data
+                    android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".SplashActivity">
             <intent-filter>
@@ -57,10 +63,16 @@
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name=".Map.ForegroundService" />
         <service android:name=".Map.ForegroundService2" />
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_app_key" />
     </application>
+
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
