@@ -164,7 +164,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SensorManager sensorManager;
     private Sensor accelerormeterSensor;
 
-    boolean checking_shake = false;
+    boolean checking_shake=false;
 
     SharedPreferences.OnSharedPreferenceChangeListener mPrefChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -849,52 +849,52 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 y = event.values[SensorManager.DATA_Y];
                 z = event.values[SensorManager.DATA_Z];
 
-                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
+                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 1000;
 
                 if (speed > SHAKE_THRESHOLD) {// 이벤트발생!!
-                    topicStr2 = topicStr2 + "####" + latitude + "####" + longitude + "####사용자####";
-                    Log.v("SEYUN_TAG", topicStr2);
-                    String msg = new String(topicStr2);
-                    String word1 = msg.split("####")[0];
-                    String lati = msg.split("####")[1];
-                    String longi = msg.split("####")[2];
-                    String user = msg.split("####")[3];
-                    Log.v("SEYUN_TAG", lati);
-                    Log.v("SEYUN_TAG", longi);
+                        topicStr2 = topicStr2 + "####" + latitude + "####" + longitude + "####사용자####";
+                        Log.v("SEYUN_TAG", topicStr2);
+                        String msg = new String(topicStr2);
+                        String word1 = msg.split("####")[0];
+                        String lati = msg.split("####")[1];
+                        String longi = msg.split("####")[2];
+                        String user = msg.split("####")[3];
+                        Log.v("SEYUN_TAG", lati);
+                        Log.v("SEYUN_TAG", longi);
 
-                    int qos = 0;
-                    try {
-                        IMqttToken subToken = client.publish(topic_value, topicStr2.getBytes(), qos, false);
-                        subToken.setActionCallback(new IMqttActionListener() {
-                            @Override
-                            public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
-                                Log.v("SEYUN_TAG", "connection2");
-                                String text = "사용자의 핸드폰이 심각히 흔들렸습니다.";
-                                Toast.makeText(MapActivity.this, text, Toast.LENGTH_SHORT).show();
+                        int qos = 0;
+                        try {
+                            IMqttToken subToken = client.publish(topic_value, topicStr2.getBytes(), qos, false);
+                            subToken.setActionCallback(new IMqttActionListener() {
+                                @Override
+                                public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
+                                    Log.v("SEYUN_TAG", "connection2");
+                                    String text = "사용자의 핸드폰이 심각히 흔들렸습니다.";
+                                    Toast.makeText(MapActivity.this, text, Toast.LENGTH_SHORT).show();
 
-                                //여기서 토스트문을 음성으로 말해줘야함.
-                                voiceActivity.text = text;
-                                voiceActivity.speekTTS(voiceActivity.text, tts);
+                                    //여기서 토스트문을 음성으로 말해줘야함.
+                                    voiceActivity.text = text;
+                                    voiceActivity.speekTTS(voiceActivity.text, tts);
 
-                                topicStr2 = "길을 잃었어요!!!";
+                                    topicStr2 = "길을 잃었어요!!!";
 
-                                SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = tmsg.edit();
-                                editor.putString("latitude", lati);
-                                editor.putString("longitude", longi);
-                                editor.apply();
-                                //editor.commit();
-                                Log.v("SEYUN_TAG", "데이터저장2");
-                            }
+                                    SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = tmsg.edit();
+                                    editor.putString("latitude", lati);
+                                    editor.putString("longitude", longi);
+                                    editor.apply();
+                                    //editor.commit();
+                                    Log.v("SEYUN_TAG", "데이터저장2");
+                                }
 
-                            @Override
-                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) { //연결에 실패한 경우
-                                Toast.makeText(MapActivity.this, "연결에 실패하였습니다...(2)", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } catch (MqttException fe) {
-                        fe.printStackTrace();
-                    }
+                                @Override
+                                public void onFailure(IMqttToken asyncActionToken, Throwable exception) { //연결에 실패한 경우
+                                    Toast.makeText(MapActivity.this, "연결에 실패하였습니다...(2)", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (MqttException fe) {
+                            fe.printStackTrace();
+                        }
                 }
 
                 lastX = event.values[DATA_X];
