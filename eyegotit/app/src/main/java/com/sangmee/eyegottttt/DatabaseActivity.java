@@ -108,7 +108,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         Glide.with(this).load(R.drawable.loader).into(gifImage);
 
         handler = new RecognitionHandler(this);
-        naverRecognizer = CsrProc.getCsrProc(this, "ssbj4qersa");
+        naverRecognizer = CsrProc.getCsrProc(this, "y3tpghh44v");
         naverRecognizer.setHandler(handler);
 
         child_name = new ArrayList<>();
