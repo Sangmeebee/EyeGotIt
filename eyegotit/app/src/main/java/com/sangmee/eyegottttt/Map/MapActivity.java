@@ -62,8 +62,21 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+//카카오 import
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.LinkObject;
+import com.kakao.message.template.LocationTemplate;
+import com.kakao.message.template.TextTemplate;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
+import com.kakao.util.helper.log.Logger;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, TextToSpeech.OnInitListener {
 
@@ -76,7 +89,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Double> latitude_list = new ArrayList<>();
     ArrayList<LatLng> latlng_list = new ArrayList<>();
     String message[] = new String[20];
-    boolean location_changed=false;
+    boolean location_changed = false;
 
     Handler delayHandler = new Handler();
 
@@ -112,7 +125,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //mqtt 변수
     private ImageButton alert_btn;
     String topicStr = "사용자의 현재위치입니다.";
-    String topicStr2="길을 잃었어요!!!";
+    String topicStr2 = "길을 잃었어요!!!";
     String topic_value;
     MqttAndroidClient client;
     double d_longi;
@@ -126,19 +139,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     SharedPreferences.Editor editor;
     String lati;
     String longi;
-    Marker marker=new Marker();
+    Marker marker = new Marker();
 
-    SharedPreferences.OnSharedPreferenceChangeListener mPrefChangeListener=new SharedPreferences.OnSharedPreferenceChangeListener() {
+    SharedPreferences.OnSharedPreferenceChangeListener mPrefChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         }
     };
 
+    //카카오 변수
+    //새로운 버전
+    private Button kakao_share;
+    private Button kakao_friends;
+    private Button kakao_share_map;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int MOVE_HAND=350;//얼마나 밀었을때
+        final int MOVE_HAND = 350;//얼마나 밀었을때
         final float[] sx = new float[1]; //시작지점
         final float[] sy = new float[1];
         final float[] ssx = new float[1];
@@ -235,29 +255,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
 
-
         alert_btn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent e) {
-                if(e.getAction() == MotionEvent.ACTION_DOWN){
+                if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     sx[0] = e.getRawX();
                     sy[0] = e.getRawY();
                 }
-                if(e.getAction() == MotionEvent.ACTION_MOVE){
+                if (e.getAction() == MotionEvent.ACTION_MOVE) {
                     ssx[0] = e.getRawX();
                     ssy[0] = e.getRawY();
-                }
-                else if(e.getAction() == MotionEvent.ACTION_UP){
-                    float diffxx = sx[0] -e.getRawX();
+                } else if (e.getAction() == MotionEvent.ACTION_UP) {
+                    float diffxx = sx[0] - e.getRawX();
                     float diffyy = sy[0] - e.getRawY();
-                    if(Math.abs(diffxx)>Math.abs(diffyy)){
-                        if(diffxx>MOVE_HAND) {
+                    if (Math.abs(diffxx) > Math.abs(diffyy)) {
+                        if (diffxx > MOVE_HAND) {// 왼쪽 드래그
+
+                            //카카오톡 연동
+                            shareKaKaoLinkWithMap();
+
                             topicStr = topicStr + "####" + latitude + "####" + longitude + "####사용자####";
                             String msg = new String(topicStr);
                             String word1 = msg.split("####")[0];
                             lati = msg.split("####")[1];
                             longi = msg.split("####")[2];
-                            String user= msg.split("####")[3];
+                            String user = msg.split("####")[3];
 
                             Log.v("SEYUN_TAG", lati);
                             Log.v("SEYUN_TAG", longi);
@@ -302,15 +324,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             } catch (MqttException fe) {
                                 fe.printStackTrace();
                             }
-                        }
-                        else if (diffxx<-MOVE_HAND) {
+                        } else if (diffxx < -MOVE_HAND) {    // 이ㅣ부분이 오른쪽 드래그
                             topicStr2 = topicStr2 + "####" + latitude + "####" + longitude + "####사용자####";
                             Log.v("SEYUN_TAG", topicStr2);
                             String msg = new String(topicStr2);
                             String word1 = msg.split("####")[0];
                             String lati = msg.split("####")[1];
                             String longi = msg.split("####")[2];
-                            String user= msg.split("####")[3];
+                            String user = msg.split("####")[3];
                             Log.v("SEYUN_TAG", lati);
                             Log.v("SEYUN_TAG", longi);
 
@@ -348,14 +369,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 fe.printStackTrace();
                             }
                         }
-                    }
-                    else {
-                        if (diffyy > MOVE_HAND){
-                            Intent intent=new Intent(MapActivity.this, CameraActivity.class);
+                    } else {
+                        if (diffyy > MOVE_HAND) {
+                            Intent intent = new Intent(MapActivity.this, CameraActivity.class);
                             startActivity(intent);
-                        }
-                        else if (diffyy < -MOVE_HAND){
-                            Intent intent=new Intent(MapActivity.this, FirstviewActivity.class);
+                        } else if (diffyy < -MOVE_HAND) {
+                            Intent intent = new Intent(MapActivity.this, FirstviewActivity.class);
                             intent.putExtra("id", user_id);
                             startActivity(intent);
                         }
@@ -364,10 +383,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         });
-
-
-
-
 
 
         Query recentPostsQuery1 = databaseReference.child(user_id).child("location").child(s_location);
@@ -399,7 +414,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     latlng_list.add(new LatLng(d_latitude, d_longitude));
 
 
-
                 }
 
             }
@@ -425,7 +439,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.v("SEYUN_TAG", "알림");
 
         //알림표시
-        NotificationManager notificationManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Bitmap LargeIconNoti = BitmapFactory.decodeResource(getResources(), R.drawable.background);
         Intent intent = new Intent(this, SplashActivity.class); //알림창 누르면 액티비티로 넘어가는.
@@ -437,7 +451,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .setLargeIcon(LargeIconNoti) //알림창뜨는데 옆 큰 아이콘배치.
                 .setContentTitle("경고")
                 .setContentText("사용자가 길을 잃었습니다!!!")
-                .setDefaults(Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE) //소리로 알림을 알려줌.
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE) //소리로 알림을 알려줌.
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
@@ -473,8 +487,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //latitude = locationSource.getLastLocation().getLatitude();
 
 
-
-
         saved_location = new Location[longitude_list.size()];
         for (int i = 0; i < longitude_list.size(); i++) {
             saved_location[i] = new Location("point" + i);
@@ -483,18 +495,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         }
 
-        for(int i=0; i<longitude_list.size(); i++){
+        for (int i = 0; i < longitude_list.size(); i++) {
             Marker marker = new Marker();
             marker.setPosition((new LatLng(latitude_list.get(i), longitude_list.get(i))));
 
-            if (i==0) {
+            if (i == 0) {
 
                 marker.setCaptionText(s_location + " 출발지");
                 marker.setCaptionTextSize(16);
                 marker.setCaptionColor(Color.BLUE);
                 marker.setCaptionAlign(Align.Top);
                 marker.setIconTintColor(Color.RED);
-            } else if (i==(longitude_list.size()-1)) {
+            } else if (i == (longitude_list.size() - 1)) {
 
                 marker.setCaptionText(s_location + " 도착지");
                 marker.setCaptionTextSize(16);
@@ -502,7 +514,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 marker.setCaptionAlign(Align.Top);
                 marker.setIconTintColor(Color.BLUE);
             } else {
-                marker.setCaptionText("지점"+i);
+                marker.setCaptionText("지점" + i);
             }
             marker.setMap(naverMap);
         }
@@ -522,8 +534,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         path.setMap(naverMap);
 
 
-        for(int k = 0; k< saved_location.length; k++) {
-            Query recentPostsQuery = databaseReference.child(user_id).child("location").child(s_location).child("지점"+ k).child("message");
+        for (int k = 0; k < saved_location.length; k++) {
+            Query recentPostsQuery = databaseReference.child(user_id).child("location").child(s_location).child("지점" + k).child("message");
             final int finalK = k;
             recentPostsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -531,6 +543,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     message[finalK] = dataSnapshot.getValue().toString();
                     Log.d("sangminSpod", finalK + String.valueOf(message[finalK]));
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
@@ -544,7 +557,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         public void onLocationChanged(Location location) {
             //여기서 위치값이 갱신되면 이벤트가 발생한다.  eds
             //값은 Location 형태로 리턴되며 좌표 출력 방법은 다음과 같다.
-            location_changed=true;
+            location_changed = true;
             longitude = location.getLongitude(); //경도
             latitude = location.getLatitude();   //위도
 
@@ -569,39 +582,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     break;
                 }
             }
-            for(int i = 0;i<saved_location.length;i++){
-                if(index == i){
-                    if(index == 0){
-                        if(message[1].equals("")){
-                            voiceActivity.text="출발지입니다. 다음 지점까지 가세요.";
-                            Toast.makeText(MapActivity.this,voiceActivity.text, Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            voiceActivity.text="출발지입니다. 다음 지점까지 가는 방법은" + message[1] + "입니다.";
-                            Toast.makeText(MapActivity.this,voiceActivity.text, Toast.LENGTH_SHORT).show();
+            for (int i = 0; i < saved_location.length; i++) {
+                if (index == i) {
+                    if (index == 0) {
+                        if (message[1].equals("")) {
+                            voiceActivity.text = "출발지입니다. 다음 지점까지 가세요.";
+                            Toast.makeText(MapActivity.this, voiceActivity.text, Toast.LENGTH_SHORT).show();
+                        } else {
+                            voiceActivity.text = "출발지입니다. 다음 지점까지 가는 방법은" + message[1] + "입니다.";
+                            Toast.makeText(MapActivity.this, voiceActivity.text, Toast.LENGTH_SHORT).show();
                         }
 
                         saved_location[index] = trash_location;
                         index = 1000;
-                    }else if(index == saved_location.length-1){
-                        voiceActivity.text="도착지입니다. 안내를 종료하겠습니다.";
-                        Toast.makeText(MapActivity.this,voiceActivity.text , Toast.LENGTH_SHORT).show();
+                    } else if (index == saved_location.length - 1) {
+                        voiceActivity.text = "도착지입니다. 안내를 종료하겠습니다.";
+                        Toast.makeText(MapActivity.this, voiceActivity.text, Toast.LENGTH_SHORT).show();
                         saved_location[index] = trash_location;
                         index = 1000;
-                    }else {
-                        if(message[index+1].equals("")){
-                            voiceActivity.text="지점" + index +"입니다. 다음 지점까지 가세요.";
+                    } else {
+                        if (message[index + 1].equals("")) {
+                            voiceActivity.text = "지점" + index + "입니다. 다음 지점까지 가세요.";
                             Toast.makeText(MapActivity.this, voiceActivity.text, Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            voiceActivity.text="지점" + index +"입니다. 다음 지점까지 가는 방법은 " + message[index+1] + "입니다.";
+                        } else {
+                            voiceActivity.text = "지점" + index + "입니다. 다음 지점까지 가는 방법은 " + message[index + 1] + "입니다.";
                             Toast.makeText(MapActivity.this, voiceActivity.text, Toast.LENGTH_SHORT).show();
                         }
 
                         saved_location[index] = trash_location;
                         index = 1000;
                     }
-                    voiceActivity.speekTTS(voiceActivity.text,tts);
+                    voiceActivity.speekTTS(voiceActivity.text, tts);
                 }
             }
             /*
@@ -730,5 +741,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
+    public void shareKaKaoLinkWithMap() {
+        LocationTemplate params =
+                LocationTemplate.newBuilder("서울특별시 성북구 삼선교로 16길 116",
+                        ContentObject.newBuilder("위급상황입니다.",
+                                "http://www.kakaocorp.com/images/logo/og_daumkakao_151001.png",
+                                LinkObject.newBuilder()
+                                        .setWebUrl("https://developers.kakao.com")
+                                        .setMobileWebUrl("https://developers.kakao.com")
+                                        .build())
+                                .setDescrption("사용자님의 현재 위치입니다.")
+                                .build())
+
+                        .setAddressTitle("위급상황입니다.")
+                        .build();
+
+        Map<String, String> serverCallbackArgs = new HashMap<String, String>();
+        serverCallbackArgs.put("user_id", "${current_user_id}");
+        serverCallbackArgs.put("product_id", "${shared_product_id}");
+
+        KakaoLinkService.getInstance().sendDefault(this, params, serverCallbackArgs, new ResponseCallback<KakaoLinkResponse>() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                Logger.e(errorResult.toString());
+            }
+
+            @Override
+            public void onSuccess(KakaoLinkResponse result) {
+                // 템플릿 밸리데이션과 쿼터 체크가 성공적으로 끝남. 톡에서 정상적으로 보내졌는지 보장은 할 수 없다. 전송 성공 유무는 서버콜백 기능을 이용하여야 한다.
+            }
+        });
+    }
 
 }
