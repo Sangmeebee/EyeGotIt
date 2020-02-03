@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -60,6 +62,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -270,9 +273,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     float diffyy = sy[0] - e.getRawY();
                     if (Math.abs(diffxx) > Math.abs(diffyy)) {
                         if (diffxx > MOVE_HAND) {// 왼쪽 드래그
-
+                            String address=getAddress(MapActivity.this,latitude,longitude);
                             //카카오톡 연동
-                            shareKaKaoLinkWithMap();
+                            shareKaKaoLinkWithMap(address);
 
                             topicStr = topicStr + "####" + latitude + "####" + longitude + "####사용자####";
                             String msg = new String(topicStr);
@@ -424,6 +427,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
+
+    public String getAddress(Context mContext, double lat, double lng) {
+        String nowAddress ="현재 위치를 확인 할 수 없습니다.";
+        Geocoder geocoder = new Geocoder(mContext, Locale.KOREA);
+        List<Address> address;
+        try {
+            if (geocoder != null) {
+                //세번째 파라미터는 좌표에 대해 주소를 리턴 받는 갯수로
+                //한좌표에 대해 두개이상의 이름이 존재할수있기에 주소배열을 리턴받기 위해 최대갯수 설정
+                address = geocoder.getFromLocation(lat, lng, 1);
+
+                if (address != null && address.size() > 0) {
+                    // 주소 받아오기
+                    String currentLocationAddress = address.get(0).getAddressLine(0).toString();
+                    nowAddress  = currentLocationAddress;
+                }
+            }
+        } catch (IOException e) {
+            nowAddress = "주소를 가져올 수 없습니다.";
+            System.out.println("주소를 가져올 수 없습니다.");
+            e.printStackTrace();
+        }
+        return nowAddress;
+    }
+
+
 
     private MqttConnectOptions getMqttConnectionOption() {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
@@ -741,9 +770,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
-    public void shareKaKaoLinkWithMap() {
+    public void shareKaKaoLinkWithMap(String address) {
         LocationTemplate params =
-                LocationTemplate.newBuilder("서울특별시 성북구 삼선교로 16길 116",
+                LocationTemplate.newBuilder(address,
                         ContentObject.newBuilder("위급상황입니다.",
                                 "http://www.kakaocorp.com/images/logo/og_daumkakao_151001.png",
                                 LinkObject.newBuilder()
