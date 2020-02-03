@@ -28,6 +28,7 @@
         <activity
             android:name=".Map.MapActivity"
             android:screenOrientation="portrait" />
+
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

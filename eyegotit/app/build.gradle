@@ -42,6 +42,7 @@ repositories {
         url 'https://google.bintray.com/tensorflow'
     }
     google()
+    jcenter()
 }
 
 dependencies {
@@ -76,4 +77,20 @@ dependencies {
     }
     implementation files('libs/org.eclipse.paho.android.service:1.1.1')
     implementation files('libs/org.eclipse.paho.client.mqttv3:1.2.1')
+
+    compile 'com.naver.speech.clientapi:naverspeech-ncp-sdk-android:1.1.6'
+
+    // 카카오 로그인 sdk를 사용하기 위해 필요.
+    implementation group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+
+    // 카카오링크 sdk를 사용하기 위해 필요.
+    implementation group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+
+    // 카카오톡 sdk를 사용하기 위해 필요.
+    implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
+
+    //카카오톡 친구 목록 가져오기 sdk
+    implementation 'com.kakao.sdk:friends:1.16.0'
+
+    implementation 'com.kakao.sdk:kakaotalk:1.16.0'
 }
