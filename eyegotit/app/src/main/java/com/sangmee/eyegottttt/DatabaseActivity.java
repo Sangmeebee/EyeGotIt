@@ -90,7 +90,6 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
 
 
         if (Build.VERSION.SDK_INT >= 23) {
-            // 퍼미션 체크
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
                     Manifest.permission.RECORD_AUDIO}, PERMISSION);
         }
@@ -115,6 +114,7 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
         child_name = new ArrayList<>();
         initDatabase();
 
+
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.listviewtext, new ArrayList<String>()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -127,8 +127,6 @@ public class DatabaseActivity extends AppCompatActivity implements TextToSpeech.
                 item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
 
                 item.setPadding(50, 5, 5, 5);
-
-                // return the view
                 return item;
             }
         };
