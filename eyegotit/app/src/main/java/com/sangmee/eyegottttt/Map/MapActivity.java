@@ -157,9 +157,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private float x, y, z;
 
     private static final int SHAKE_THRESHOLD = 800;
-    private static final int DATA_X = SensorManager.DATA_X;
-    private static final int DATA_Y = SensorManager.DATA_Y;
-    private static final int DATA_Z = SensorManager.DATA_Z;
+    private static final int DATA_X = 0;
+    private static final int DATA_Y = 1;
+    private static final int DATA_Z = 2;
 
     private SensorManager sensorManager;
     private Sensor accelerormeterSensor;
@@ -846,9 +846,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             long gabOfTime = (currentTime - lastTime);
             if (gabOfTime > 100) {
                 lastTime = currentTime;
-                x = event.values[SensorManager.DATA_X];
-                y = event.values[SensorManager.DATA_Y];
-                z = event.values[SensorManager.DATA_Z];
+                x = event.values[DATA_X];
+                y = event.values[DATA_Y];
+                z = event.values[DATA_Z];
 
                 speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 1000;
 
