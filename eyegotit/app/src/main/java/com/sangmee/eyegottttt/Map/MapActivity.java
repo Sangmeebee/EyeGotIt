@@ -760,6 +760,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+
     }
 
     @Override
