@@ -1,30 +1,49 @@
 # Map 액티비티 소개
 
-##  MapActivity.java    
+##  MapActivity.java _ Shake 감지
   
-### 1. 다음 구문을  app/build.gradle  파일에 추가한다.
+### 1. Shake 감지가 이루어질 액티비티(MapActivity)에 SensorEventListener 라는 인터페이스를 implements 시킨다. 
+    - 사용자의 움직임을 감지할 수 있도록 하기위함이다
+    - 구현해야할 메소드 : onSensorChanged, onAcccuracyChanged 2가지
 ~~~
-repositories {
-    jcenter()
-}
-dependencies {
-    compile 'com.naver.speech.clientapi:naverspeech-ncp-sdk-android:1.1.6'
-}
+public class MapActivity extends AppCompatActivity implements ,,, SensorEventListener {  }
 ~~~
 
-### 2. Android Manifest 파일을 다음과 같이 설정한다.
-    - 사용자의 음성 입력을 마이크를 통해 녹음해야 하고 녹음된 데이터를 서버로 전송해야 한다. 
-    - 따라서,  android.permission.INTERNET 와  android.permission.RECORD_AUDIO 에 대한 권한이 반드시 필요하다. 
+### 2. SensorManger를 얻어온다. 
+    - Context.getSystemService()를 통해서 SensorManger 객체를 얻어올 수 있다
 ~~~
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.naver.naverspeech.client"
-          android:versionCode="1" android:versionName="1.0" >
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ...
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerormeterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+~~~
+    - 핸드폰의 배터리를 소모시키기 때문에 얻어오는 것(등록) 뿐만 아니라 사용하지 않을때 비활성화 시키는 것은 매우 중요하다
+
+-등록
+~~~
+@Override
+    protected void onStart() {
+        ...
+        if (accelerormeterSensor != null) {
+            sensorManager.registerListener(this, accelerormeterSensor,
+                    SensorManager.SENSOR_DELAY_GAME);
+        }
+    }
 ~~~
 
-### 3. 허용 버전 문제
-    - 네이버 Open API는 Android SDK 버전 10 이상을 지원
-    - 따라서, build.gradle 파일의  minSdkVersion  값을 이에 맞게 설정해야 한다. 
+-비활성화
+~~~
+@Override
+    protected void onStop() {
+        ...
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+~~~
+
+### 3. onSensorChanged 메소드에서 Sensor값을 얻어온다. 
+    - 사용자가 핸드폰을 흔들때 어떤 방향으로 흔드는 지에 대한 x,y,z값이다
+    - onSensorChanged 메소드의 인자로 들어온 event의 values 라는 배열값들 중 0,1,2번째 값이 x,y,z 축이다
