@@ -255,7 +255,7 @@ public class ProtecterMapActivity extends AppCompatActivity
                     if(word1.equals("사용자의 현재위치입니다.")){
                         startService();
                     }
-                    else if(word1.equals("길을 잃었어요!!!")){
+                    else if(word1.equals("길을 잃었어요!!!")||word1.equals("사용자의 핸드폰이 심각히 흔들렸습니다.")){
                         startService2();
                     }
 
