@@ -133,6 +133,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ImageButton alert_btn;
     String topicStr = "사용자의 현재위치입니다.";
     String topicStr2 = "길을 잃었어요!!!";
+    String topicStr3="사용자의 핸드폰이 심각히 흔들렸습니다.";
     String topic_value;
     MqttAndroidClient client;
     double d_longi;
@@ -156,7 +157,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private float lastZ;
     private float x, y, z;
 
-    private static final int SHAKE_THRESHOLD = 800;
+    private static final int SHAKE_THRESHOLD = 1500;
     private static final int DATA_X = 0;
     private static final int DATA_Y = 1;
     private static final int DATA_Z = 2;
@@ -850,12 +851,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 y = event.values[DATA_Y];
                 z = event.values[DATA_Z];
 
-                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 1000;
+                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
 
                 if (speed > SHAKE_THRESHOLD) {// 이벤트발생!!
-                        topicStr2 = topicStr2 + "####" + latitude + "####" + longitude + "####사용자####";
-                        Log.v("SEYUN_TAG", topicStr2);
-                        String msg = new String(topicStr2);
+                        topicStr3 = topicStr3 + "####" + latitude + "####" + longitude + "####사용자####";
+                        Log.v("SEYUN_TAG", topicStr3);
+                        String msg = new String(topicStr3);
                         String word1 = msg.split("####")[0];
                         String lati = msg.split("####")[1];
                         String longi = msg.split("####")[2];
@@ -865,7 +866,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         int qos = 0;
                         try {
-                            IMqttToken subToken = client.publish(topic_value, topicStr2.getBytes(), qos, false);
+                            IMqttToken subToken = client.publish(topic_value, topicStr3.getBytes(), qos, false);
                             subToken.setActionCallback(new IMqttActionListener() {
                                 @Override
                                 public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
@@ -877,7 +878,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     voiceActivity.text = text;
                                     voiceActivity.speekTTS(voiceActivity.text, tts);
 
-                                    topicStr2 = "길을 잃었어요!!!";
+                                    topicStr3 = "사용자의 핸드폰이 심각히 흔들렸습니다.";
 
                                     SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = tmsg.edit();
