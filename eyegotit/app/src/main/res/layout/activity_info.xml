@@ -13,11 +13,11 @@
 
         <TextView
             android:id="@+id/textView"
-            android:gravity="center"
-            android:textSize="15dp"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:text="누구누구님 안녕하세요" />
+            android:gravity="center"
+            android:text="누구누구님 안녕하세요"
+            android:textSize="15dp" />
 
         <ImageView
             android:layout_width="match_parent"
