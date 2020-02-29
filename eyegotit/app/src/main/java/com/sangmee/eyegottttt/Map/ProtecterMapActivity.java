@@ -56,10 +56,12 @@ import com.naver.maps.map.overlay.Align;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
+import com.sangmee.eyegottttt.DatabaseActivity;
 import com.sangmee.eyegottttt.Login.ListViewAdapterSwipt;
 import com.sangmee.eyegottttt.Login.LoginActivity;
 import com.sangmee.eyegottttt.R;
 import com.sangmee.eyegottttt.SplashActivity;
+import com.sangmee.eyegottttt.route_confirmActivity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -281,6 +283,8 @@ public class ProtecterMapActivity extends AppCompatActivity
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 switch (position){
                     case 0 :
+                        intent = new Intent(ProtecterMapActivity.this, InformationActivity.class);
+                        startActivity(intent);
                         break;
                     case 1 :
                         logout_dialog();

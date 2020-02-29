@@ -23,6 +23,9 @@
             android:label="@string/title_activity_protecter_map"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".Map.InformationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".route_confirmActivity"
             android:screenOrientation="portrait" />
         <activity
