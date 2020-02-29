@@ -284,6 +284,7 @@ public class ProtecterMapActivity extends AppCompatActivity
                 switch (position){
                     case 0 :
                         intent = new Intent(ProtecterMapActivity.this, InformationActivity.class);
+                        intent.putExtra("id", user_id);
                         startActivity(intent);
                         break;
                     case 1 :
