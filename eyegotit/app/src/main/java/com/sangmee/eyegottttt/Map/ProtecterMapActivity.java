@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -115,6 +116,7 @@ public class ProtecterMapActivity extends AppCompatActivity
     DrawerLayout drawer;
 
     String address;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -305,6 +307,8 @@ public class ProtecterMapActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         ////////////
 
+
+
     }
 
     public String getAddress(Context mContext, double lat, double lng) {
@@ -456,8 +460,6 @@ public class ProtecterMapActivity extends AppCompatActivity
 
         //longtitude = locationSource.getLastLocation().getLongitude();
         //latitude = locationSource.getLastLocation().getLatitude();
-
-
     }
     @Override
     protected void onStart() {
@@ -570,4 +572,5 @@ public class ProtecterMapActivity extends AppCompatActivity
 
         builder.show();
     }
+
 }

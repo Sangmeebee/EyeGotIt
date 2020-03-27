@@ -30,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -113,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ImageButton listButton;
 
     int checking=0;
+
+    double click_long;
+    double click_lat;
+    Marker click_marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,21 +302,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     spot= "지점"+num;
                     message="";
 
-                    Marker marker=new Marker();
-                    marker.setPosition(new LatLng(latitude,longitude));
+                    //Marker marker=new Marker();
+                    //marker.setPosition(new LatLng(click_lat,click_long));
 
                     //위도 경도 저장
-                    startLongitude=marker.getPosition().longitude; //경도
-                    startLatitude=marker.getPosition().latitude;  //위도
+                    startLongitude=click_marker.getPosition().longitude; //경도
+                    startLatitude=click_marker.getPosition().latitude;  //위도
                     sLongitude = Double.toString(startLongitude);
                     sLatitude= Double.toString(startLatitude);
 
-                    marker.setCaptionText(location+" 출발지");
-                    marker.setCaptionTextSize(16);
-                    marker.setCaptionColor(Color.BLUE);
-                    marker.setCaptionAlign(Align.Top);
-                    marker.setIconTintColor(Color.RED);
-                    marker.setMap(naverMap);
+                    click_marker.setCaptionText(location+" 출발지");
+                    click_marker.setCaptionTextSize(16);
+                    click_marker.setCaptionColor(Color.BLUE);
+                    click_marker.setCaptionAlign(Align.Top);
+                    click_marker.setIconTintColor(Color.RED);
+                    //click_marker.setMap(naverMap);
 
                     postFirebaseDatabase(true);
                     point_btn.setEnabled(true);
@@ -394,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                 Marker marker=new Marker();
-                marker.setPosition(new LatLng(latitude,longitude));
+                marker.setPosition(new LatLng(click_lat,click_long));
                 //위도 경도 저장
                 startLongitude=marker.getPosition().longitude; //경도
                 startLatitude=marker.getPosition().latitude;  //위도
@@ -471,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 spot= "지점"+(num+1);
                 message=ans_edit.getText().toString();
                 Marker marker=new Marker();
-                marker.setPosition(new LatLng(latitude,longitude));
+                marker.setPosition(new LatLng(click_lat,click_long));
                 //위도 경도 저장
                 startLongitude=marker.getPosition().longitude; //경도
                 startLatitude=marker.getPosition().latitude;  //위도
@@ -709,6 +714,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //longtitude = locationSource.getLastLocation().getLongitude();
         //latitude = locationSource.getLastLocation().getLatitude();
+
+        naverMap.setOnMapClickListener((point, coord) -> {
+            Toast.makeText(this, "클릭: " + coord.latitude + ", " + coord.longitude, Toast.LENGTH_SHORT).show();
+            click_lat=coord.latitude;
+            click_long=coord.longitude;
+
+            Marker marker=new Marker();
+            marker.setPosition(new LatLng(click_lat,click_long));
+            marker.setMap(naverMap);
+            click_marker=marker;
+            /*marker.setPosition((new LatLng(coord.latitude, coord.longitude)));
+            marker.setCaptionText("클릭"+" 위치");
+            marker.setCaptionTextSize(16);
+            marker.setCaptionColor(Color.BLACK);
+            marker.setCaptionAlign(Align.Top);
+            marker.setIconTintColor(Color.GRAY);
+            marker.setMap(naverMap);*/
+
+        });
     }
 
 
