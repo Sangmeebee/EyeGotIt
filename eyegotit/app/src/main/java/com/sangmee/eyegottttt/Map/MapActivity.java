@@ -54,6 +54,7 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
 import com.sangmee.eyegottttt.FirstviewActivity;
+import com.sangmee.eyegottttt.Login.Signup;
 import com.sangmee.eyegottttt.R;
 import com.sangmee.eyegottttt.SpeakVoiceActivity;
 import com.sangmee.eyegottttt.SplashActivity;
@@ -615,6 +616,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             location_changed = true;
             longitude = location.getLongitude(); //경도
             latitude = location.getLatitude();   //위도
+            postFirebaseDatabase(true);
 
            /* String stringlong=Double.toString(longitude);
             String stringlat=Double.toString(latitude);
@@ -710,6 +712,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
     };
+
+    public void postFirebaseDatabase(boolean add){
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        Map<String, Object> postValues = null;
+        if(add){
+            CurrentLocation currentLocation = new CurrentLocation(Double.toString(longitude),Double.toString(latitude));
+            postValues = currentLocation.toMap();
+        }
+        //database 추가 ->pint_list:child , spot: title, postValues :키와 값
+
+        childUpdates.put("/"+user_id+"/currentLocation", postValues);
+        databaseReference.updateChildren(childUpdates);
+    }
 
 
     public void naverMapBasicSettings() {
