@@ -719,7 +719,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Map<String, Object> childUpdates = new HashMap<>();
         Map<String, Object> postValues = null;
         if(add){
-            CurrentLocation currentLocation = new CurrentLocation(Double.toString(longitude),Double.toString(latitude));
+            CurrentLocation currentLocation = new CurrentLocation(Double.toString(longitude), Double.toString(latitude), s_location);
             postValues = currentLocation.toMap();
         }
         //database 추가 ->pint_list:child , spot: title, postValues :키와 값
@@ -816,7 +816,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
-        android.os.Process.killProcess(android.os.Process.myPid());
+        super.onBackPressed();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child(user_id).child("currentLocation").removeValue();
+        super.onDestroy();
     }
 
     public void shareKaKaoLinkWithMap(String address) {
@@ -871,49 +874,49 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
 
                 if (speed > SHAKE_THRESHOLD) {// 이벤트발생!!
-                        topicStr3 = topicStr3 + "####" + latitude + "####" + longitude + "####사용자####";
-                        Log.v("SEYUN_TAG", topicStr3);
-                        String msg = new String(topicStr3);
-                        String word1 = msg.split("####")[0];
-                        String lati = msg.split("####")[1];
-                        String longi = msg.split("####")[2];
-                        String user = msg.split("####")[3];
-                        Log.v("SEYUN_TAG", lati);
-                        Log.v("SEYUN_TAG", longi);
+                    topicStr3 = topicStr3 + "####" + latitude + "####" + longitude + "####사용자####";
+                    Log.v("SEYUN_TAG", topicStr3);
+                    String msg = new String(topicStr3);
+                    String word1 = msg.split("####")[0];
+                    String lati = msg.split("####")[1];
+                    String longi = msg.split("####")[2];
+                    String user = msg.split("####")[3];
+                    Log.v("SEYUN_TAG", lati);
+                    Log.v("SEYUN_TAG", longi);
 
-                        int qos = 0;
-                        try {
-                            IMqttToken subToken = client.publish(topic_value, topicStr3.getBytes(), qos, false);
-                            subToken.setActionCallback(new IMqttActionListener() {
-                                @Override
-                                public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
-                                    Log.v("SEYUN_TAG", "connection2");
-                                    String text = "사용자의 핸드폰이 심각히 흔들렸습니다.";
-                                    Toast.makeText(MapActivity.this, text, Toast.LENGTH_SHORT).show();
+                    int qos = 0;
+                    try {
+                        IMqttToken subToken = client.publish(topic_value, topicStr3.getBytes(), qos, false);
+                        subToken.setActionCallback(new IMqttActionListener() {
+                            @Override
+                            public void onSuccess(IMqttToken asyncActionToken) { //연결에 성공한 경우
+                                Log.v("SEYUN_TAG", "connection2");
+                                String text = "사용자의 핸드폰이 심각히 흔들렸습니다.";
+                                Toast.makeText(MapActivity.this, text, Toast.LENGTH_SHORT).show();
 
-                                    //여기서 토스트문을 음성으로 말해줘야함.
-                                    voiceActivity.text = text;
-                                    voiceActivity.speekTTS(voiceActivity.text, tts);
+                                //여기서 토스트문을 음성으로 말해줘야함.
+                                voiceActivity.text = text;
+                                voiceActivity.speekTTS(voiceActivity.text, tts);
 
-                                    topicStr3 = "사용자의 핸드폰이 심각히 흔들렸습니다.";
+                                topicStr3 = "사용자의 핸드폰이 심각히 흔들렸습니다.";
 
-                                    SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = tmsg.edit();
-                                    editor.putString("latitude", lati);
-                                    editor.putString("longitude", longi);
-                                    editor.apply();
-                                    //editor.commit();
-                                    Log.v("SEYUN_TAG", "데이터저장2");
-                                }
+                                SharedPreferences tmsg = getSharedPreferences("tmsg", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = tmsg.edit();
+                                editor.putString("latitude", lati);
+                                editor.putString("longitude", longi);
+                                editor.apply();
+                                //editor.commit();
+                                Log.v("SEYUN_TAG", "데이터저장2");
+                            }
 
-                                @Override
-                                public void onFailure(IMqttToken asyncActionToken, Throwable exception) { //연결에 실패한 경우
-                                    Toast.makeText(MapActivity.this, "연결에 실패하였습니다...(2)", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } catch (MqttException fe) {
-                            fe.printStackTrace();
-                        }
+                            @Override
+                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) { //연결에 실패한 경우
+                                Toast.makeText(MapActivity.this, "연결에 실패하였습니다...(2)", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (MqttException fe) {
+                        fe.printStackTrace();
+                    }
                 }
 
                 lastX = event.values[DATA_X];
