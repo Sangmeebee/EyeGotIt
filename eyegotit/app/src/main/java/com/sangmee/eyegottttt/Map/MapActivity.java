@@ -408,6 +408,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             Intent intent = new Intent(MapActivity.this, FirstviewActivity.class);
                             intent.putExtra("id", user_id);
                             startActivity(intent);
+                            databaseReference = FirebaseDatabase.getInstance().getReference();
+                            databaseReference.child(user_id).child("currentLocation").removeValue();
+                            finish();
                         }
                     }
                 }
@@ -819,7 +822,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onBackPressed();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.child(user_id).child("currentLocation").removeValue();
-        super.onDestroy();
+        finish();
     }
 
     public void shareKaKaoLinkWithMap(String address) {
