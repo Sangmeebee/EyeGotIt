@@ -31,39 +31,45 @@
 또한, 물체(장애물)의 위치와 사용자 사이의 거리를 측정 할 수 있습니다. 
 ```
 
+## 주요 적용 기술 및 구조
+
+* 데이터베이스
+```
+HashMap 알고리즘을 이용하여 Firebase 환경 구축
+```
+* 지도
+```
+NaverColudPlatform의 Maps Api를 사용하여 Map 구축 , GPS Provider, NetworkProvider과 Maps Api의 Passive Provider로 GPS값 추출
+```
+* 음성인식
+```
+Naver Clova Speech Recognition와 Android의 Text To Speech를 통한 사용자와 앱의 상호작용
+```
+* 사물인식
+```
+Tensorflow Object Detection Api를 사용하여 사물인식
+```
+* MQTT
+```
+MQTT Broker(HiveMQ)를 통하여 사용자와 보호자 연결한 뒤, Token의 Topic값으로 회원가입시 Firebase에 저장되는 topic값을 지정 
+```
 
 
 
+## 기대효과
 
-
-
-
-
-
-
-
-
-
-
-
- - 주요 적용 기술 및 구조
-
-데이터베이스 : HashMap 알고리즘을 이용하여 Firebase 환경 구축
-지도 : NaverColudPlatform의 Maps Api를 사용하여 Map 구축 , GPS Provider, NetworkProvider과 Maps Api의 Passive Provider로 GPS값 추출
-음성인식 : Naver Clova Speech Recognition와 Android의 Text To Speech를 통한 사용자와 앱의 상호작용
-사물인식 : Tensorflow Object Detection Api를 사용하여 사물인식
-MQTT : MQTT Broker(HiveMQ)를 통하여 사용자와 보호자 연결한 뒤, Token의 Topic값으로 회원가입시 Firebase에 저장되는 topic값을 지정 
-
-
-
-
- - 기대효과
-
-위험감소 :
+* 위험감소
+```
  - 길찾기 기능 사용 중 신호등을 사물인식 기능으로 신호 확인 
  - 길찾기 기능 사용 중 스스로 해결하지 못할 상황 발생 시 보호자에게 즉시 위험 알림 전송
-맞춤조작 : 일반 사용자가 아닌 시각, 발달 장애인을 위한 Drag조작과 음성 인식 기술 적용
-발전방향 :
+```
+* 맞춤조작
+```
+일반 사용자가 아닌 시각, 발달 장애인을 위한 Drag조작과 음성 인식 기술 적용
+```
+* 발전방향
+```
  - 많은 위험요소 사물들을 학습하여, 길찾기 기능 사용 중 위험요소를 감지하여 해결
  - 카메라가 부착된 안경을 사용하여 사물인식 과정을 일반인의 시야와 같은 위치에서 판별
  - 사용자가 위험알림 버튼을 누를 시 MQTT를 사용하여 보호자 뿐 아니라 근처의 경찰서로도 알림 전송
+```
