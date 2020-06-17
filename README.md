@@ -25,7 +25,7 @@
 ```
 위험 상황을 대비하여 사용자가 화면을 왼쪽으로 drag 함으로써 보호자에게 현재 위치를 전송 할 수 있습니다. 
 ```
-* 신호등 인식과 사물 거리 인식 
+[**신호등 인식과 사물 거리 인식**](http://whatismarkdown.com/)
 ```
 카메라가 장착된 안경을 사용하여 신호등의 적색신호와 녹색신호를 판별할 수 있습니다. 
 또한, 물체(장애물)의 위치와 사용자 사이의 거리를 측정 할 수 있습니다. 
@@ -45,7 +45,7 @@ NaverColudPlatform의 Maps Api를 사용하여 Map 구축 , GPS Provider, Networ
 ```
 Naver Clova Speech Recognition와 Android의 Text To Speech를 통한 사용자와 앱의 상호작용
 ```
-* 사물인식
+* [**사물인식**]
 ```
 Tensorflow Object Detection Api를 사용하여 사물인식
 ```
