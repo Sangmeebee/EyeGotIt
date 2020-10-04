@@ -1,5 +1,9 @@
 # EyeGotIt
-
+Hansung Univ. Computer engineering Graduation Project
+- 김상민 [Sangmeebee의 공간](https://github.com/Sangmeebee)
+- 임찬호 [Lim-chano의 공간](https://github.com/Lim-chano)
+- 마효리 [hyori100의 공간](https://github.com/hyori100)
+- 최찬미 [cksalchl0102의 공간](https://github.com/cksalchl0102)
 ## 작품 개요
 ### <당신의 눈이 되어드립니다!> 시각장애인을 위한 길 안내 어플리케이션
 
